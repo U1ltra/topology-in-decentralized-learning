@@ -29,7 +29,7 @@ def main():
         )
     ax.set(xlabel="Learning rate", ylabel="Convergence rate")
     ax.legend()
-    fig
+    fig.savefig("demo.pdf")
 
 
 if __name__ == "__main__":
