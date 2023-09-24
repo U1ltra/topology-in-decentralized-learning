@@ -5,7 +5,7 @@ from functools import partial
 from typing import NamedTuple
 
 import pax
-import pyexr
+# import pyexr
 import torch.nn
 import torch.utils.data
 import torchvision
@@ -20,18 +20,28 @@ from utils.communication import pack
 from utils.communication import unpack
 from utils.timer import Timer
 
+# output date and time
+import datetime
+import pytz
+
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+torch.cuda.empty_cache()
+
 config = {
     "seed": 1,
-    "model_name": "MLP",
+    "model_name": "VGG-11",
     "non_iid_alpha": None,
     "num_data_splits": None,
-    "task": "FashionMNIST",
-    "topology": "Ring",
+    "task": "Cifar",
+    "topology": "Star",
     "learning_rate": 0.05,
-    "num_epochs": 50,
-    "batch_size": 32,
+    "num_epochs": 25,
+    "batch_size": 16,
     "step_decay": [
-        [1, 1]
+        [1, 0.75], 
+        [0.1, .15],
+        [0.01, .10],
     ],  # [[1, 0.75], [0.1, .25]] means "full learning rate for 75%, 0.1x for 25%"
     "momentum": 0.9,
     "weight_decay": 1e-4,
@@ -40,13 +50,12 @@ config = {
     "eval_batch_size": 2000,
     "eval_alpha": 0.75,  # in [0.5, 1]. 0.5 means uniform, larger numbers focus alpha % of evaluation on the first half of each time window
     "eval_budget": 100,
-    "ema_gamma": 0.0,
+    "ema_gamma": 0.95,
     "inter_worker_distances": "last iterate",
 }
 
 
 output_dir = "output.tmp"
-
 
 def main():
     torch.manual_seed(config["seed"])
@@ -450,4 +459,11 @@ def log_runtime(label, mean_time, std, instances):
 
 
 if __name__ == "__main__":
+    # print east time
+    nyc_datetime = datetime.datetime.now(pytz.timezone('US/Eastern'))
+    print(nyc_datetime)
+
     main()
+
+    nyc_datetime = datetime.datetime.now(pytz.timezone('US/Eastern'))
+    print(nyc_datetime)
