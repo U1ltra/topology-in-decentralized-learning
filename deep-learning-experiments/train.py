@@ -28,20 +28,27 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 torch.cuda.empty_cache()
 
+input_args = input("learning rate: ")
+items = input_args.split()
+lr = items[0]
+topology = "Fully connected" if items[1] == "FC" else items[1]
+sample_replacement = (items[2] == "True")
+
 config = {
     "seed": 1,
     "model_name": "VGG-11",
     "non_iid_alpha": None,
     "num_data_splits": None,
     "task": "Cifar",
-    "topology": "Star",
-    "learning_rate": 0.05,
+    "topology": topology,
+    "learning_rate": float(lr),
     "num_epochs": 25,
     "batch_size": 16,
     "step_decay": [
-        [1, 0.75], 
-        [0.1, .15],
-        [0.01, .10],
+        [1, 1],
+        # [1, 0.75], # probably not needed, since first 25 epochs are inital training
+        # [0.1, .15],
+        # [0.01, .10],
     ],  # [[1, 0.75], [0.1, .25]] means "full learning rate for 75%, 0.1x for 25%"
     "momentum": 0.9,
     "weight_decay": 1e-4,
@@ -52,8 +59,9 @@ config = {
     "eval_budget": 100,
     "ema_gamma": 0.95,
     "inter_worker_distances": "last iterate",
+    "sample_replacement": sample_replacement,
 }
-
+print(config)
 
 output_dir = "output.tmp"
 
@@ -134,7 +142,7 @@ def main():
             batch_size=config["batch_size"] * config["num_workers"],
             sampler=RandomSampler(
                 training_set,
-                replacement=True,
+                replacement=config["sample_replacement"],
                 num_samples=(
                     int(
                         len(training_set) * config["num_epochs"] * 4 * 100
