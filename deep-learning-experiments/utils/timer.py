@@ -115,6 +115,7 @@ class Timer:
         with StringIO() as buffer:
             print("--- Timer summary -----------------------------------------------", file=buffer)
             print("  Event                          |  Count | Average time |  Frac.", file=buffer)
+            total_time = 0.0
             for event_label in sorted(self.totals):
                 total = self.totals[event_label]
                 count = self.call_counts[event_label]
@@ -127,6 +128,8 @@ class Timer:
                     f"- {event_label:30s} | {count:6d} | {avg_duration:11.5f}s | {runtime_percentage:5.1f}%",
                     file=buffer,
                 )
+                total_time += total
+            print("- Total time                     |         | {total_time:11.5f}m | 100.0%".format(total_time=total_time/60), file=buffer)
             print("-----------------------------------------------------------------", file=buffer)
             return buffer.getvalue()
 
