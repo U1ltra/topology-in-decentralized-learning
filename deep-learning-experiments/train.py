@@ -42,7 +42,7 @@ config = {
     "task": "Cifar",
     "topology": topology,
     "learning_rate": float(lr),
-    "num_epochs": 25,
+    "num_epochs": 100,
     "batch_size": 16,
     "step_decay": [
         [1, 1],
@@ -475,3 +475,4 @@ if __name__ == "__main__":
 
     nyc_datetime = datetime.datetime.now(pytz.timezone('US/Eastern'))
     print(nyc_datetime)
+    print("\nDone!")
